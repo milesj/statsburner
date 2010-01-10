@@ -1,0 +1,22 @@
+StatsBurner - Feedburner API Wrapper
+************************************
+
+Requirements
+============
+
+	* PHP 5.2.x
+
+Features
+========
+
+    * Grabs statistics from Feedburners Awareness API
+    * Grabs the circulation count and hits count
+    * Settings to use the cURL module
+    * Settings to check for overlapping date ranges / duplicate dates
+    * Ability to define date ranges and discrete dates
+    * Can build local XML files for faster parsing (Good with cron jobs)
+
+Documentation
+=============
+
+	* http://www.milesj.me/resources/script/statsburner
