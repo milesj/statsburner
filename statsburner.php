@@ -1,6 +1,6 @@
 <?php
 /**
- * statsburner.php
+ * StatsBurner - Feedburner Stats Aggregator
  *
  * FACTS: Feedburner Awareness API Circulation Tracking and Statistics
  * Grabs the statistics (circulation and hits) from your feedburner feed.
@@ -9,8 +9,6 @@
  * @author 		Miles Johnson - www.milesj.me
  * @copyright	Copyright 2006-2009, Miles Johnson, Inc.
  * @license 	http://www.opensource.org/licenses/mit-license.php - Licensed under The MIT License
- * @package     StatsBurner - Feedburner Stats Aggregator
- * @version     2.3
  * @link		www.milesj.me/resources/script/statsburner
  * @link		http://www.feedburner.com/
  * @link		http://code.google.com/apis/feedburner/awareness_api.html
@@ -40,7 +38,7 @@ class StatsBurner {
 	const TYPE_YEAR = 'y';
 
 	/**
-	 * Current version: www.milesj.me/files/logs/statsburner
+	 * Current version: www.milesj.me/resources/logs/statsburner
 	 *
 	 * @access public
 	 * @var string
