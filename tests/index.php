@@ -23,7 +23,7 @@ function debug($var) {
 }
 
 // Include class and instantiate for http://feeds.feedburner.com/milesj
-include_once 'statsburner/Statsburner.php';
+include_once '../statsburner/Statsburner.php';
 
 $feed = new Statsburner('milesj');
 
