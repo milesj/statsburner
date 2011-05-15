@@ -144,7 +144,7 @@ class Statsburner {
 				list($y, $m, $d) = explode('-', $date);
 
 				if (!preg_match('/^(?:\d{4})-(?:0?[1-9]|1[0-2])-(?:0?[1-9]|[1-2]\d|3[0-1])$/', $date) || !checkdate($m, $d, $y)) {
-					$this->_error(__METHOD__, 6);
+					$this->_error(__METHOD__, 6, $date);
 					continue;
 				}
 
