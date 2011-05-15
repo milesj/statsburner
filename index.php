@@ -7,9 +7,9 @@
  * Furthermore, each request can support multiple dates, discrete ranges and offset ranges.
  * Minor caching is also built in to reduce the heavyness of these HTTP requests.
  *
- * @author 		Miles Johnson - http://milesj.me
+ * @author		Miles Johnson - http://milesj.me
  * @copyright	Copyright 2006-2011, Miles Johnson, Inc.
- * @license 	http://opensource.org/licenses/mit-license.php - Licensed under The MIT License
+ * @license		http://opensource.org/licenses/mit-license.php - Licensed under The MIT License
  * @link		http://milesj.me/code/php/statsburner
  * @link		http://feedburner.com/
  * @link		http://code.google.com/apis/feedburner/awareness_api.html
@@ -22,7 +22,7 @@ function debug($var) {
 	echo '<pre>'. print_r($var, true) .'</pre>';
 }
 
-// Include class and instantiate
+// Include class and instantiate for http://feeds.feedburner.com/milesj
 include_once 'statsburner/Statsburner.php';
 
 $feed = new Statsburner('milesj');

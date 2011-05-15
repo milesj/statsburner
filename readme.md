@@ -1,5 +1,7 @@
 # Statsburner v3.0 #
 
+A class that aggregates, calculates and averages statistics from the Feedburner Awareness API.
+
 ## Requirements ##
 
 * PHP 5.2.x

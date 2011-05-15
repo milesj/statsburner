@@ -7,9 +7,9 @@
  * Furthermore, each request can support multiple dates, discrete ranges and offset ranges.
  * Minor caching is also built in to reduce the heavyness of these HTTP requests.
  * 
- * @author 		Miles Johnson - http://milesj.me
+ * @author		Miles Johnson - http://milesj.me
  * @copyright	Copyright 2006-2011, Miles Johnson, Inc.
- * @license 	http://opensource.org/licenses/mit-license.php - Licensed under The MIT License
+ * @license		http://opensource.org/licenses/mit-license.php - Licensed under The MIT License
  * @link		http://milesj.me/code/php/statsburner
  * @link		http://feedburner.com/
  * @link		http://code.google.com/apis/feedburner/awareness_api.html
@@ -144,7 +144,8 @@ class Statsburner {
 				list($y, $m, $d) = explode('-', $date);
 
 				if (!preg_match('/^(?:\d{4})-(?:0?[1-9]|1[0-2])-(?:0?[1-9]|[1-2]\d|3[0-1])$/', $date) || !checkdate($m, $d, $y)) {
-					return $this->_error(__METHOD__, 6);
+					$this->_error(__METHOD__, 6);
+					continue;
 				}
 
 				if (is_array($options)) {
@@ -171,7 +172,7 @@ class Statsburner {
 			} else {
 				$parts = explode('-', $date);
 
-				switch (mb_strtolower($options['type'])) {
+				switch (strtolower($options['type'])) {
 					case self::TYPE_DAY:
 						$future = mktime(0, 0, 0, $parts[1], $parts[2] + $options['offset'], $parts[0]);
 					break;
@@ -217,13 +218,11 @@ class Statsburner {
 				}
 
 				// If date is a range
-				if (mb_strlen($dates[$i]) > 10) {
-					$parts = explode(',', $dates[$i]);
-					$dateStart = $parts[0];
-					$dateFinish = $parts[1];
+				if (strlen($dates[$i]) > 10) {
+					list($dateStart, $dateFinish) = explode(',', $dates[$i]);
 
 					// If date being checked is a range
-					if (mb_strlen($date) > 10) {
+					if (strlen($date) > 10) {
 						$subParts = explode(',', $date);
 
 						foreach ($subParts as $newDate) {
@@ -240,7 +239,7 @@ class Statsburner {
 					}
 				// If date is a single
 				} else {
-					if (mb_strpos($dates[$i], $date) !== false) {
+					if (strpos($dates[$i], $date) !== false) {
 						++$detected;
 					}
 				}
@@ -308,30 +307,26 @@ class Statsburner {
 		// Fetch with cURL
 		$curl = curl_init();
 		curl_setopt_array($curl, array(
-		CURLOPT_URL => $url,
-		CURLOPT_HEADER => false,
-		CURLOPT_RETURNTRANSFER => true,
-		CURLOPT_BINARYTRANSFER => true,
-		CURLOPT_FOLLOWLOCATION => true,
-		CURLOPT_SSL_VERIFYHOST => false,
-		CURLOPT_SSL_VERIFYPEER => false,
-		CURLOPT_USERAGENT => 'Statsburner API'
+			CURLOPT_URL => $url,
+			CURLOPT_HEADER => false,
+			CURLOPT_RETURNTRANSFER => true,
+			CURLOPT_BINARYTRANSFER => true,
+			CURLOPT_FOLLOWLOCATION => true,
+			CURLOPT_SSL_VERIFYHOST => false,
+			CURLOPT_SSL_VERIFYPEER => false,
+			CURLOPT_USERAGENT => 'Statsburner API v'. $this->version
 		));
 
 		$response = curl_exec($curl);
-
-		if (curl_errno($curl) || curl_error($curl)) {
-			return $this->_error(__METHOD__, curl_error($curl) .' ('. curl_errno($curl) .')');
+		
+		if (curl_error($curl)) {
+			return $this->_error(__METHOD__, curl_error($curl), '('. curl_errno($curl) .')');
 		}
 
 		curl_close($curl);
 
 		$xml = simplexml_load_string($response);
-
-		// Error checking
-		if ((string) $xml['stat'] == 'fail') {
-			return $this->_error(__METHOD__, (int) $xml->err[0]['code'], $url);
-		}
+		$hasError = ((string) $xml['stat'] == 'fail');
 
 		// Get statistics average
 		$count = count($xml->feed->entry);
@@ -342,87 +337,101 @@ class Statsburner {
 		$reach = 0;
 
 		// Has items
-		foreach ($xml->feed->entry as $item) {
-			$date = (string) $item['date'];
-			$items[$date] = array(
-				'circulation' => (int) $item['circulation'],
-				'downloads' => (int) $item['downloads'],
-				'reach' => (int) $item['reach'],
-				'hits' => (int) $item['hits']
-			);
+		if ($xml->feed->entry) {
+			foreach ($xml->feed->entry as $item) {
+				$date = (string) $item['date'];
+				$items[$date] = array(
+					'circulation' => (int) $item['circulation'],
+					'downloads' => (int) $item['downloads'],
+					'reach' => (int) $item['reach'],
+					'hits' => (int) $item['hits']
+				);
 
-			// Has links
-			if ($item->item) {
-				$links = array();
-				$views = 0;
-				$clicks = 0;
+				// Has links
+				if ($item->item) {
+					$links = array();
+					$views = 0;
+					$clicks = 0;
 
-				foreach ($item->item as $link) {
-					$data = array(
-						'title' => (string) $link['title'],
-						'url' => (string) $link['url'],
-						'views' => (int) $link['itemviews'],
-						'clicks' => (int) $link['clickthroughs']
-					);
+					foreach ($item->item as $link) {
+						$data = array(
+							'title' => (string) $link['title'],
+							'url' => (string) $link['url'],
+							'views' => (int) $link['itemviews'],
+							'clicks' => (int) $link['clickthroughs']
+						);
 
-					// Has referrers
-					if ($link->referrer) {
-						$data['referrers'] = array();
+						// Has referrers
+						if ($link->referrer) {
+							$data['referrers'] = array();
 
-						foreach ($link->referrer as $referrer) {
-							$data['referrers'][] = array(
-								'url' => (string) $referrer['url'],
-								'views' => (int) $referrer['itemviews'],
-								'clicks' => (int) $referrer['clickthroughs']
-							);
+							foreach ($link->referrer as $referrer) {
+								$data['referrers'][] = array(
+									'url' => (string) $referrer['url'],
+									'views' => (int) $referrer['itemviews'],
+									'clicks' => (int) $referrer['clickthroughs']
+								);
+							}
 						}
+
+						$views = $views + $data['views'];
+						$clicks = $clicks + $data['clicks'];
+						$links[] = $data;
 					}
 
-					$views = $views + $data['views'];
-					$clicks = $clicks + $data['clicks'];
-					$links[] = $data;
+					// Merge with item
+					$items[$date] = $items[$date] + array(
+						'total' => array(
+							'clicks' => $clicks,
+							'views' => $views
+						),
+						'average' => array(
+							'clicks' => round($clicks / count($links)),
+							'views' => round($views / count($links))
+						),
+						'links' => $links
+					);
 				}
 
-				// Merge with item
-				$items[$date] = $items[$date] + array(
-					'total' => array(
-						'clicks' => $clicks,
-						'views' => $views
-					),
-					'average' => array(
-						'clicks' => round($clicks / count($links)),
-						'views' => round($views / count($links))
-					),
-					'links' => $links
-				);
+				$circ = $circ + $items[$date]['circulation'];
+				$dload = $dload + $items[$date]['downloads'];
+				$reach = $reach + $items[$date]['reach'];
+				$hits = $hits + $items[$date]['hits'];
 			}
+		}
 
-			$circ = $circ + $items[$date]['circulation'];
-			$dload = $dload + $items[$date]['downloads'];
-			$reach = $reach + $items[$date]['reach'];
-			$hits = $hits + $items[$date]['hits'];
+		// Set to 1 incase of divide by zero
+		if ($count == 0) {
+			$count = 1;
 		}
 
 		// Build the Feedburner array
 		$output = array(
-		'id' => (string) $xml->feed['id'],
-		'uri' => (string) $xml->feed['uri'],
-		'api' => $url,
-		'total' => array(
-			'circulation' => $circ,
-			'downloads' => $dload,
-			'reach' => $reach,
-			'hits' => $hits
-		),
-		'average' => array(
-			'circulation' => round($circ / $count),
-			'downloads' => round($dload / $count),
-			'reach' => round($reach / $count),
-			'hits' => round($hits / $count)
-		),
-		'dates' => $dates,
-		'items' => $items
+			'id' => (string) $xml->feed['id'],
+			'uri' => (string) $xml->feed['uri'],
+			'api' => $url,
+			'total' => array(
+				'circulation' => $circ,
+				'downloads' => $dload,
+				'reach' => $reach,
+				'hits' => $hits
+			),
+			'average' => array(
+				'circulation' => round($circ / $count),
+				'downloads' => round($dload / $count),
+				'reach' => round($reach / $count),
+				'hits' => round($hits / $count)
+			),
+			'dates' => $dates,
+			'items' => $items
 		);
+
+		// Don't cache if errors
+		if ($hasError) {
+			$this->_error(__METHOD__, (int) $xml->err[0]['code'], $url);
+			
+			return $output;
+		}
 
 		return $this->_cache($key, $output);
 	}
@@ -477,6 +486,7 @@ class Statsburner {
 	 * @access protected
 	 * @param string $method
 	 * @param string|int $error
+	 * @param string $msg
 	 * @return void
 	 */
 	protected function _error($method, $error, $msg = '') {
