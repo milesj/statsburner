@@ -472,8 +472,7 @@ class Statsburner {
 	 */
 	protected function _cache($key, $content) {
 		$duration = is_numeric($this->_cacheDuration) ? $this->_cacheDuration : strtotime($this->_cacheDuration);
-		$cache = $duration ."\n";
-		$cache .= serialize($content);
+		$cache = $duration ."\n". serialize($content);
 
 		file_put_contents($this->_cachePath . $key, $cache);
 

@@ -4,7 +4,9 @@ A class that aggregates, calculates and averages statistics from the Feedburner 
 
 ## Requirements ##
 
-* PHP 5.2.x
+* PHP 5.2.x, 5.3.x
+* SimpleXML - http://php.net/manual/book.simplexml.php
+* cURL - http://php.net/manual/book.curl.php
 
 ## Features ##
 
