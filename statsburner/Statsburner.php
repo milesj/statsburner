@@ -188,65 +188,8 @@ class Statsburner {
 				$dateRange[] = $date .','. date('Y-m-d', $future);
 			}
 		}
-
-		// Check for duplicates
-		if ($this->detectDupeDates($dateRange) > 0) {
-			return $this->_error(__METHOD__, 'Duplicate date range detected.');
-		}
-
+		
 		return $dateRange;
-	}
-
-	/**
-	 * Checks to see if there are duplicate dates in the dates array.
-	 *
-	 * @access public
-	 * @param array $dates
-	 * @return int
-	 */
-	public function detectDupeDates($dates) {
-		$totalDates = count($dates) - 1;
-		$detected = 0;
-
-		// Go through each section of the array
-		for ($i = 0; $i <= $totalDates; ++$i) {
-
-			// Go thru each date of each section
-			foreach ($dates as $id => $date) {
-				if ($id == $i) {
-					continue;
-				}
-
-				// If date is a range
-				if (strlen($dates[$i]) > 10) {
-					list($dateStart, $dateFinish) = explode(',', $dates[$i]);
-
-					// If date being checked is a range
-					if (strlen($date) > 10) {
-						$subParts = explode(',', $date);
-
-						foreach ($subParts as $newDate) {
-							if ($newDate > $dateStart && $newDate < $dateFinish) {
-								++$detected;
-							}
-						}
-
-					// If date being checked is a single
-					} else {
-						if ($date > $dateStart && $date < $dateFinish) {
-							++$detected;
-						}
-					}
-				// If date is a single
-				} else {
-					if (strpos($dates[$i], $date) !== false) {
-						++$detected;
-					}
-				}
-			}
-		}
-
-		return $detected;
 	}
 
 	/**
