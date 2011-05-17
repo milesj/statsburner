@@ -193,6 +193,27 @@ class Statsburner {
 	}
 
 	/**
+	 * Delete all cached files that are older than the expiration date.
+	 *
+	 * @access public
+	 * @param string int $expires
+	 * @return void
+	 */
+	public function flush($expires = '-30 days') {
+		if ($dh = opendir($this->_cachePath)) {
+			$expires = is_numeric($expires) ? $expires : strtotime($expires);
+
+			while (($file = readdir($dh)) !== false) {
+				$path = $this->_cachePath . $file;
+
+				if (strlen($file) == 32 && filemtime($path) >= $expires) {
+					@unlink($path);
+				}
+			}
+		}
+	}
+
+	/**
 	 * Grab basic feed data. Will return averages and totals of statistic values.
 	 *
 	 * @access public
