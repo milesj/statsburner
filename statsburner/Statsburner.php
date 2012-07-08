@@ -7,6 +7,7 @@
  * Furthermore, each request can support multiple dates, discrete ranges and offset ranges.
  * Minor caching is also built in to reduce the heavyness of these HTTP requests.
  *
+ * @version		3.1
  * @author		Miles Johnson - http://milesj.me
  * @copyright	Copyright 2006-2011, Miles Johnson, Inc.
  * @license		http://opensource.org/licenses/mit-license.php - Licensed under The MIT License
@@ -30,7 +31,7 @@ class Statsburner {
 	 * @access public
 	 * @var string
 	 */
-	public $version = '3.0';
+	public $version = '3.1';
 
 	/**
 	 * Directory path to write cached files.
