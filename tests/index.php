@@ -1,4 +1,4 @@
-<?php 
+<?php
 /**
  * Statsburner - Feedburner Stats Aggregator
  *

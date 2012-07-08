@@ -6,7 +6,7 @@
  * Supports all standard API calls: getFeedData(), getItemData() and getResyndicationData().
  * Furthermore, each request can support multiple dates, discrete ranges and offset ranges.
  * Minor caching is also built in to reduce the heavyness of these HTTP requests.
- * 
+ *
  * @author		Miles Johnson - http://milesj.me
  * @copyright	Copyright 2006-2011, Miles Johnson, Inc.
  * @license		http://opensource.org/licenses/mit-license.php - Licensed under The MIT License
@@ -77,11 +77,10 @@ class Statsburner {
 	 *
 	 * @access public
 	 * @param string $uri
-	 * @return void
 	 */
 	public function __construct($uri) {
 		$this->__uri = $uri;
-		$this->setCaching(dirname(__FILE__) .'/cache/', $this->_cacheDuration);
+		$this->setCaching(dirname(__FILE__) . '/cache/', $this->_cacheDuration);
 	}
 
 	/**
@@ -102,10 +101,10 @@ class Statsburner {
 
 		// Don't use http_build_query() as it escapes commas and breaks
 		foreach (array_filter($query) as $key => $value) {
-			$params[] = $key .'='. $value;
+			$params[] = $key . '=' . $value;
 		}
 
-		return $url .'?'. implode('&', $params);
+		return $url . '?' . implode('&', $params);
 	}
 
 	/**
@@ -165,7 +164,7 @@ class Statsburner {
 		foreach ($dates as $date => $options) {
 			if (is_string($options)) {
 				$dateRange[] = $options;
-				
+
 			} else if ($options['offset'] == 0) {
 				$dateRange[] = $date;
 
@@ -185,10 +184,10 @@ class Statsburner {
 					break;
 				}
 
-				$dateRange[] = $date .','. date('Y-m-d', $future);
+				$dateRange[] = $date . ',' . date('Y-m-d', $future);
 			}
 		}
-		
+
 		return $dateRange;
 	}
 
@@ -196,7 +195,7 @@ class Statsburner {
 	 * Delete all cached files that are older than the expiration date.
 	 *
 	 * @access public
-	 * @param string int $expires
+	 * @param string|int $expires
 	 * @return void
 	 */
 	public function flush($expires = '-30 days') {
@@ -206,7 +205,7 @@ class Statsburner {
 			while (($file = readdir($dh)) !== false) {
 				$path = $this->_cachePath . $file;
 
-				if (strlen($file) == 32 && filemtime($path) >= $expires) {
+				if (strlen($file) === 32 && filemtime($path) >= $expires) {
 					@unlink($path);
 				}
 			}
@@ -254,6 +253,7 @@ class Statsburner {
 	 * @access private
 	 * @param string $url
 	 * @param array $ranges
+	 * @param string $item
 	 * @return mixed
 	 */
 	public function request($url, array $ranges = array(), $item = null) {
@@ -282,15 +282,15 @@ class Statsburner {
 		));
 
 		$response = curl_exec($curl);
-		
+
 		if (curl_error($curl)) {
-			return $this->_error(__METHOD__, curl_error($curl), '('. curl_errno($curl) .')');
+			return $this->_error(__METHOD__, curl_error($curl), '(' . curl_errno($curl) . ')');
 		}
 
 		curl_close($curl);
 
 		$xml = simplexml_load_string($response);
-		$hasError = ((string) $xml['stat'] == 'fail');
+		$hasError = ((string) $xml['stat'] === 'fail');
 
 		// Get statistics average
 		$count = count($xml->feed->entry);
@@ -364,7 +364,7 @@ class Statsburner {
 			}
 		}
 
-		// Set to 1 incase of divide by zero
+		// Set to 1 in case of divide by zero
 		if ($count == 0) {
 			$count = 1;
 		}
@@ -393,7 +393,7 @@ class Statsburner {
 		// Don't cache if errors
 		if ($hasError) {
 			$this->_error(__METHOD__, (int) $xml->err[0]['code'], $url);
-			
+
 			return $output;
 		}
 
@@ -411,7 +411,7 @@ class Statsburner {
 	public function setCaching($path, $duration) {
 		$path = str_replace('\\', '/', $path);
 
-		if (substr($path, -1) != '/') {
+		if (substr($path, -1) !== '/') {
 			$path .= '/';
 		}
 
@@ -436,7 +436,7 @@ class Statsburner {
 	 */
 	protected function _cache($key, $content) {
 		$duration = is_numeric($this->_cacheDuration) ? $this->_cacheDuration : strtotime($this->_cacheDuration);
-		$cache = $duration ."\n". serialize($content);
+		$cache = $duration . "\n" . serialize($content);
 
 		file_put_contents($this->_cachePath . $key, $cache);
 
@@ -450,15 +450,15 @@ class Statsburner {
 	 * @param string $method
 	 * @param string|int $error
 	 * @param string $msg
-	 * @return void
+	 * @return boolean
+	 * @throws Exception
 	 */
 	protected function _error($method, $error, $msg = '') {
 		if (isset($this->__errors[$error])) {
 			$error = $this->__errors[$error];
 		}
 
-		trigger_error(sprintf('%s(): %s %s', $method, $error, $msg), E_USER_WARNING);
-		return;
+		throw new Exception(sprintf('%s(): %s %s', $method, $error, $msg));
 	}
 
 	/**
