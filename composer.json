@@ -1,0 +1,23 @@
+{
+	"name": "mjohnson/statsburner",
+	"type": "library",
+	"description": "A stand alone wrapper for the Feedburner Awareness API.",
+	"keywords": ["feedburner", "stats", "rss", "awareness", "api"],
+	"homepage": "http://milesj.me/code/php/statsburner",
+	"license": "MIT",
+	"authors": [
+		{
+			"name": "Miles Johnson",
+			"homepage": "http://milesj.me"
+		}
+	],
+	"require": {
+		"php": ">=5.2"
+	},
+	"support": {
+		"source": "https://github.com/milesj/php-statsburner"
+	},
+	"autoload": {
+		"psr-0": { "Statsburner": "statsburner" }
+	}
+}
