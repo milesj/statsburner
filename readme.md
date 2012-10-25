@@ -1,4 +1,4 @@
-# Statsburner v3.1 #
+# Statsburner v3.1.1 #
 
 A class that aggregates, calculates and averages statistics from the Feedburner Awareness API.
 
